@@ -10,11 +10,21 @@ package earcut;
  */
 class Earcut {
 	
-	static public function earcut(data:Array<Float>, ?holeIndices:Array<Int>, dim:Int = 2):Array<Int> {
+	static public function earcut(data:Array<Float>, ?holeIndices:Array<Int>, dim:Int = 2, ?triangles:Array<Int>):Array<Int> {
 		var hasHoles:Bool = holeIndices != null && holeIndices.length > 0;
 		var	outerLen:Int = hasHoles ? Std.int(holeIndices[0] * dim) : data.length;
 		var	outerNode:Node = linkedList(data, 0, outerLen, dim, true);
-		var	triangles:Array<Int> = [];
+
+		if (triangles == null) triangles = [];
+
+        // Empty triangles data
+        if (triangles.length > 0) {
+            #if cpp
+            untyped triangles.__SetSize(0);
+            #else
+            triangles.splice(0, triangles.length);
+            #end
+        }
 		
 		if (outerNode == null) {
 			return triangles;
