@@ -72,6 +72,8 @@ class Earcut {
 		}
 		
 		earcutLinked(outerNode, triangles, dim, minX, minY, size);
+
+		Node.recycleAllNodes();
 		
 		return triangles;
 	}
@@ -630,8 +632,8 @@ class Earcut {
 	// link two polygon vertices with a bridge; if the vertices belong to the same ring, it splits polygon into two;
 	// if one belongs to the outer ring and another to a hole, it merges it into a single ring
 	static function splitPolygon(a:Node, b:Node):Node {
-		var a2:Node = new Node(a.i, a.x, a.y);
-		var	b2:Node = new Node(b.i, b.x, b.y);
+		var a2:Node = Node.get(a.i, a.x, a.y);
+		var	b2:Node = Node.get(b.i, b.x, b.y);
 		var	an:Node = a.next;
 		var	bp:Node = b.prev;
 		
@@ -652,7 +654,7 @@ class Earcut {
 
 	// create a node and optionally link it with previous one (in a circular doubly linked list)
 	static function insertNode(i:Int, x:Float, y:Float, ?last:Node):Node {
-		var node = new Node(i, x, y);
+		var node = Node.get(i, x, y);
 		
 		if (last == null) {
 			node.prev = node;
@@ -772,6 +774,13 @@ class Node {
 	
 	
 	public function new(i:Int, x:Float, y:Float) {
+
+		reset(i, x, y);
+
+	}
+
+	inline function reset(i:Int, x:Float, y:Float) {
+
 		// vertice index in coordinates array
 		this.i = i;
 		
@@ -792,6 +801,46 @@ class Node {
 		
 		// indicates whether this is a steiner point
 		this.steiner = false;
-	}
+
+	} //reset
+
+/// Recycling nodes
+
+	static var nextPoolIndex:Int = 0;
+
+	static var pool:Array<Node> = [];
+
+	public static function clearPool() {
+
+		nextPoolIndex = 0;
+		pool = [];
+
+	} //clearPool
+
+	public static function recycleAllNodes() {
+
+		nextPoolIndex = 0;
+
+	} //recycleAllNodes
+
+	public static function get(i:Int, x:Float, y:Float) {
+
+		if (nextPoolIndex == pool.length) {
+
+			// Create new node
+			var node = new Node(i, x, y);
+			nextPoolIndex++;
+			pool.push(node);
+			return node;
+		}
+		else {
+
+			// Reuse an available node
+			var node = pool[nextPoolIndex];
+			nextPoolIndex++;
+			return node;
+		}
+
+	} //get
 	
 }
