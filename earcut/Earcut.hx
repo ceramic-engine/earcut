@@ -806,6 +806,8 @@ class Node {
 
 /// Recycling nodes
 
+	public static var recyclingEnabled:Bool = true;
+
 	static var nextPoolIndex:Int = 0;
 
 	static var pool:Array<Node> = [];
@@ -825,20 +827,25 @@ class Node {
 
 	public static function get(i:Int, x:Float, y:Float) {
 
-		if (nextPoolIndex == pool.length) {
+		if (recyclingEnabled) {
+			if (nextPoolIndex == pool.length) {
 
-			// Create new node
-			var node = new Node(i, x, y);
-			nextPoolIndex++;
-			pool.push(node);
-			return node;
+				// Create new node
+				var node = new Node(i, x, y);
+				nextPoolIndex++;
+				pool.push(node);
+				return node;
+			}
+			else {
+
+				// Reuse an available node
+				var node = pool[nextPoolIndex];
+				nextPoolIndex++;
+				return node;
+			}
 		}
 		else {
-
-			// Reuse an available node
-			var node = pool[nextPoolIndex];
-			nextPoolIndex++;
-			return node;
+			return new Node(i, x, y);
 		}
 
 	} //get
