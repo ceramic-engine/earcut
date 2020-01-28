@@ -802,7 +802,7 @@ class Node {
 		// indicates whether this is a steiner point
 		this.steiner = false;
 
-	} //reset
+	}
 
 /// Recycling nodes
 
@@ -817,13 +817,13 @@ class Node {
 		nextPoolIndex = 0;
 		pool = [];
 
-	} //clearPool
+	}
 
 	public static function recycleAllNodes() {
 
 		nextPoolIndex = 0;
 
-	} //recycleAllNodes
+	}
 
 	public static function get(i:Int, x:Float, y:Float) {
 
@@ -848,6 +848,6 @@ class Node {
 			return new Node(i, x, y);
 		}
 
-	} //get
+	}
 	
 }
